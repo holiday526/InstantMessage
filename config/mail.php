@@ -66,7 +66,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Here you may specify the encryption protocol that should be used when
-    | the application send e-mail messages. A sensible default using the
+    | the application send e-mail message. A sensible default using the
     | transport layer security protocol should provide great security.
     |
     */
@@ -126,7 +126,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | If you are using the "log" driver, you may specify the logging channel
-    | if you prefer to keep mail messages separate from other log entries
+    | if you prefer to keep mail message separate from other log entries
     | for simpler reading. Otherwise, the default channel will be used.
     |
     */
