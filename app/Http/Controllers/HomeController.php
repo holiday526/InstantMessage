@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Pusher\Pusher;
+use Aws\Kms\KmsClient;
 
 class HomeController extends Controller
 {
@@ -30,12 +31,6 @@ class HomeController extends Controller
     {
         // select all users except yourself
         $users = User::where('id', '!=', Auth::id())->get();
-
-        // count how many message are unread from the selected user
-//        $users = DB::select("SELECT users.id, users.name, users.avatar, users.email, count(is_read) as unread
-//        FROM user LEFT JOIN messages ON users.id = messages.from AND is_read = 0 AND messages.to = ". Auth::id(). "
-//        WHERE users.id != ". Auth::id() ."
-//        GROUP BY users.id, users.name, users.avatar, users.email");
 
         $users = DB::select("select users.id, users.name, users.avatar, users.email, count(is_read) as unread 
         from users LEFT  JOIN  messages ON users.id = messages.from and is_read = 0 and messages.to = " . Auth::id() . "
