@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers\API;
 
-//require '../vendor/autoload.php';
-
-use Aws\Waf\Exception\WafException;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
@@ -39,8 +36,6 @@ class UserController extends Controller
                 'Description' => $desc,
                 'KeyUsage' => 'ENCRYPT_DECRYPT',
             ]);
-//            dd($result);
-//            dd($result['KeyMetadata']['KeyId']);
             return $result['KeyMetadata']['KeyId'];
         } catch (AwsException $e) {
             echo $e->getMessage();
@@ -90,17 +85,6 @@ class UserController extends Controller
         $success['name'] =  $user->name;
         $success['aws_key_id'] = $aws_key_id;
         return response()->json(['success' => $success], Config::get('constants.status.ok'));
-    }
-
-    /**
-     * details api
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function details()
-    {
-        $user = Auth::user();
-        return response()->json(['success' => $user], Config::get('constants.status.ok'));
     }
 
 }

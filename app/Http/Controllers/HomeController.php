@@ -4,19 +4,18 @@ namespace App\Http\Controllers;
 
 use App\User;
 use App\Message;
+use Aws\Exception\AwsException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Pusher\Pusher;
 use Aws\Kms\KmsClient;
+use App\UserKey;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
+
     public function __construct()
     {
         $this->middleware('auth');
