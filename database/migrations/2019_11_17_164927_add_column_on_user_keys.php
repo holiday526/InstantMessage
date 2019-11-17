@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-class CreateUserKeysTable extends Migration
+class AddColumnOnUserKeys extends Migration
 {
     /**
      * Run the migrations.
@@ -14,12 +14,8 @@ class CreateUserKeysTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_keys', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->bigInteger('from');
-            $table->bigInteger('to');
-            $table->timestamps();
-        });
+        //
+        DB::statement('ALTER TABLE user_keys ADD COLUMN ciphertext_blob BLOB AFTER `to`');
     }
 
     /**
@@ -29,6 +25,7 @@ class CreateUserKeysTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_keys');
+        //
+        DB::statement('ALTER TABLE user_keys DROP COLUMN ciphertext_blob');
     }
 }

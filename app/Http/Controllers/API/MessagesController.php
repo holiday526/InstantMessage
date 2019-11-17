@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Config;
 use App\UserKey;
 use Aws\Exception\AwsException;
 use App\User;
+use Illuminate\Support\Facades\Auth;
 
 class MessagesController extends Controller
 {
@@ -64,7 +65,8 @@ class MessagesController extends Controller
      * set the session key into db
      * */
     public function setSessionKey(Request $request) {
-        $from_user_id = $request['from_user_id'];
+        $user = Auth::user();
+        $from_user_id = $user['id'];
         $to_user_id = $request['to_user_id'];
         if (
             !(UserKey::where('from', $from_user_id)->where('to', $to_user_id)->orderBy('updated_at', 'desc')->first())
@@ -97,7 +99,8 @@ class MessagesController extends Controller
      * return the client with client data key in plaintext
      * */
     public function getDataKey(Request $request) {
-        $from = $request['from_user_id'];
+        $user = Auth::user();
+        $from = $user['id'];
         $to = $request['to_user_id'];
         $session_start_by_from_user =
             UserKey::where('from',$from)

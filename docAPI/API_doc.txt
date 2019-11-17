@@ -1,0 +1,72 @@
+Temp host: http://imsecu.us-east-2.elasticbeanstalk.com
+
+1. user_register: User registation request
+	URI: /api/register
+	METHOD: POST
+	REQUEST INPUT BODY: 
+		name -> string
+		email -> email
+		password -> string > 8 char
+		c_password -> string > 8 char (confirm password)
+
+	RESPONSE:
+		{
+			success {
+				"token" : (api token),
+				"name" : (user name) (*string),
+				"aws_key_id" : (aws master id) (*uuid)
+			}
+		}
+
+2. user_login: User login request
+	URI: /api/login
+	METHOD: POST
+	REQUEST INPUT BODY:
+		email -> email
+		password -> string > 8 char
+
+	RESPONSE:
+	{
+		"success": {
+			"token" : (api token)
+			"key" : {
+				"AWSAccountId": (AWS account id) (*string),
+				"KeyId": (aws master id) (*uuid),
+				"Arn": (aws arn) (*string),
+				"CreationDate": (aws master key creationDate) (*datetime),
+				"Enabled": (aws master key is enabled or not) (*boolean),
+				"Description": (aws master key description) (*string) ** 我set左佢做user email做key既description,
+				"KeyUsage": (aws master key係用泥做咩既 多數都係"ENCRYPT_DECRYPT" = RSA2048) (*string),
+				"KeyState": (aws master key status) (*string),
+				"Origin": (aws master key條key係邊),
+				"KeyManager": (aws master key邊個去hold)
+			}
+		}
+	}
+
+3. get data key 
+	URI: /api/getkey
+	METHOD: POST
+	REQUEST INPUT BODY:
+		from_user_id -> Int (from user's id)
+		to_user_id -> Int (to user's id)
+	HEADERS:
+		Authorization: api_token (from_user_id)
+
+	RESPONSE:
+	{
+		"plaintext_base64": (plaintext data key encoded in base64, *this is for message encryption) (*string)
+	}
+
+4. set data key
+	URI: /api/setkey
+	METHOD: POST
+	REQUEST INPUT BODY:
+		from_user_id -> Int (from user's id)
+		to_user_id -> Int (to user's id)
+	HEADERS:
+		Authorization: api_token (from_user_id)
+	RESPONSE:
+	{
+		"success": (the data key canbe set or not) (*boolean)
+	}
