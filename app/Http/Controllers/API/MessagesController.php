@@ -89,7 +89,11 @@ class MessagesController extends Controller
             $to_result->ciphertext_blob = $to_user_result['CiphertextBlob'];
             $to_result->save();
 
-            return response(['success'=>true], Config::get('constants.status.created'));
+            $datakey_plaintext = $this->getDataKey($request);
+
+            return response(['success'=>true, 'plaintext_base64'=>base64_encode($datakey_plaintext)], Config::get('constants.status.created'));
+        } else {
+            return $this->getDataKey($request);
         }
     }
 
