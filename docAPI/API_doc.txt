@@ -66,7 +66,43 @@ Temp host: http://imsecu.us-east-2.elasticbeanstalk.com
 		to_user_id -> Int (to user's id)
 	HEADERS:
 		Authorization: api_token (from_user_id)
-	RESPONSE:
+	RESPONSE: if there is no chat before between two users
 	{
-		"success": (the data key canbe set or not) (*boolean)
+		"success": (the data key canbe set or not) (*boolean),
+		"plaintext_base64": (plaintext data key encoded in base64, *this is for message encryption) (*string)
 	}
+	RESPONSE: if there is chat before two users
+	{
+		"plaintext_base64": (plaintext data key encoded in base64, *this is for message encryption) (*string)
+	}
+
+5. sendMessage
+    URI: message
+    METHOD: GET
+    REQUEST INPUT BODY:
+        receiver_id -> Int (to user's id)
+        message -> string (should be encrypted message)
+    HEADERS:
+        Authorization: api_token (from_user_id)
+    RESPONSE:
+
+
+
+6. getMessage
+    URI: /message/{to_user_id}
+    METHOD: GET
+    REQUEST INPUT BODY: none
+    RESPONSE:
+        {
+            "messages": messages (messages which are not read by the users.)
+        }
+
+7. getHmacKey
+    URI: /api/getHmacKey
+    METHOD: POST
+    REQUEST INPUT BODY:
+        to_user_id -> Int (to user's id)
+    RESPONSE:
+        {
+            "hmac_key": hmac_key (string)
+        }

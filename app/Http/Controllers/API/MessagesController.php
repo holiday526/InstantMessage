@@ -18,6 +18,17 @@ class MessagesController extends Controller
         return new KmsClient(Config::get('constants.kmsClient'));
     }
 
+
+    private function generateRandomString($length = 64) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+
     /*
      * $result include
      * $result['CiphertextBlob']
@@ -73,6 +84,8 @@ class MessagesController extends Controller
             or !(UserKey::where('to', $from_user_id)->where('from', $to_user_id)->orderBy('updated_at', 'desc')->first())
         ) {
             // ** no chat before
+            $hmac_key = $this->generateRandomString();
+
             $from_user_result = $this->genDataKey($from_user_id);
             $to_user_result =
                 $this->reEncryptDataKey(User::find($to_user_id)['aws_key_id'], $from_user_result['CiphertextBlob']);
@@ -81,12 +94,14 @@ class MessagesController extends Controller
             $from_result->from = $from_user_id;
             $from_result->to = $to_user_id;
             $from_result->ciphertext_blob = $from_user_result['CiphertextBlob'];
+            $from_result->hmac_key = $hmac_key;
             $from_result->save();
 
             $to_result = new UserKey();
             $to_result->from = $to_user_id;
             $to_result->to = $from_user_id;
             $to_result->ciphertext_blob = $to_user_result['CiphertextBlob'];
+            $to_result->hmac_key = $hmac_key;
             $to_result->save();
 
             $datakey_plaintext = $this->getDataKey($request);
@@ -118,5 +133,20 @@ class MessagesController extends Controller
         ]);
         $plaintext = $result['Plaintext'];
         return response(['plaintext_base64'=>base64_encode($plaintext)]);
+    }
+
+    /*
+     * return hmac_key
+     * */
+    public function getHmacKey(Request $request) {
+        $user = Auth::user();
+        $from = $user['id'];
+        $to = $request['to_user_id'];
+        $session_start_by_from_user = UserKey::where('from',$from)
+            ->where('to',$to)
+            ->orderBy('updated_at', 'desc')
+            ->first();
+        $hmac_key = $session_start_by_from_user->hmac_key;
+        return response(['hmac_key'=>$hmac_key]);
     }
 }

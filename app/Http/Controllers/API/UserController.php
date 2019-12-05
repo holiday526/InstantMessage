@@ -54,6 +54,7 @@ class UserController extends Controller
             $user = Auth::user();
             $success['token'] =  $user->createToken('MyApp')->accessToken;
             $success['key'] = $this->getKey($user->aws_key_id);
+            $success['id'] = $user['id'];
             return response()->json(['success' => $success], Config::get('constants.status.ok'));
         } else {
             return response()->json(['error' => 'Unauthorised'], Config::get('constants.status.unauthorized'));

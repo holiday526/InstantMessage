@@ -23,5 +23,6 @@ Route::post('register', 'API\UserController@register');
 Route::group(['middleware' => 'auth:api'], function() {
     Route::post('setkey', 'API\MessagesController@setSessionKey');
     Route::post('getkey', 'API\MessagesController@getDataKey');
+    Route::post('getHmacKey', 'API\MessagesController@getHmacKey');
 });
 

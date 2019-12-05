@@ -48,11 +48,12 @@ class HomeController extends Controller
         // getting all message for the selected user
         // getting those message which is from = Auth::id() and to = user_id OR from = user_id ant to = Auth::id();
         $messages = Message::where(function ($query) use ($user_id, $my_id){
-            $query->where('from', $my_id)->where('to', $user_id);
+            $query->where('from', $my_id)->where('to', $user_id)->where('is_read', 0);
         })->orWhere(function ($query) use ($user_id, $my_id){
-            $query->where('from', $user_id)->where('to', $my_id);
+            $query->where('from', $user_id)->where('to', $my_id)->where('is_read', 0);
         })->get();
-        return view('message.index', ['messages'=> $messages]);
+        // messages which are not read by the users
+        return ['messages'=> $messages];
     }
 
     public function sendMessage(Request $request) {
