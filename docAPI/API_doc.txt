@@ -77,10 +77,10 @@ Temp host: http://imsecu.us-east-2.elasticbeanstalk.com
 	}
 
 5. sendMessage
-    URI: message
+    URI: /api/message
     METHOD: GET
     REQUEST INPUT BODY:
-        receiver_id -> Int (to user's id)
+        to_user_id -> Int (to user's id)
         message -> string (should be encrypted message)
     HEADERS:
         Authorization: api_token (from_user_id)
@@ -89,7 +89,7 @@ Temp host: http://imsecu.us-east-2.elasticbeanstalk.com
 
 
 6. getMessage
-    URI: /message/{to_user_id}
+    URI: /api/message/{to_user_id}
     METHOD: GET
     REQUEST INPUT BODY: none
     RESPONSE:

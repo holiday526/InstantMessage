@@ -11,6 +11,7 @@ use Aws\Exception\AwsException;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use App\Message;
+use Pusher\Pusher;
 
 class MessagesController extends Controller
 {
