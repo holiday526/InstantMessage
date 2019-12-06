@@ -24,5 +24,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::post('setkey', 'API\MessagesController@setSessionKey');
     Route::post('getkey', 'API\MessagesController@getDataKey');
     Route::post('getHmacKey', 'API\MessagesController@getHmacKey');
+    Route::post('message', 'API\MessagesController@sendMessage');
+    Route::get('message/{user_id}', 'API\MessagesController@getMessage');
 });
 

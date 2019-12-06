@@ -39,49 +39,49 @@ class HomeController extends Controller
         return view('home', ['users'=>$users]);
     }
 
-    public function getMessage($user_id) {
-        $my_id = Auth::id();
-
-        //when click to see message selected user's message will be read, update
-        Message::where(['from'=>$user_id, 'to'=>$my_id])->update(['is_read'=>1]);
-
-        // getting all message for the selected user
-        // getting those message which is from = Auth::id() and to = user_id OR from = user_id ant to = Auth::id();
-        $messages = Message::where(function ($query) use ($user_id, $my_id){
-            $query->where('from', $my_id)->where('to', $user_id)->where('is_read', 0);
-        })->orWhere(function ($query) use ($user_id, $my_id){
-            $query->where('from', $user_id)->where('to', $my_id)->where('is_read', 0);
-        })->get();
-        // messages which are not read by the users
-        return ['messages'=> $messages];
-    }
-
-    public function sendMessage(Request $request) {
-        $from = Auth::id();
-        $to = $request->receiver_id;
-        $message = $request->message;
-
-        $data = new Message();
-        $data->from = $from;
-        $data->to = $to;
-        $data->message = $message;
-        $data->is_read = 0;
-        $data->save();
-
-        // pusher
-        $options = array(
-            'cluster' => 'ap1',
-            'useTLS' => true
-        );
-
-        $pusher = new Pusher(
-            env('PUSHER_APP_KEY'),
-            env('PUSHER_APP_SECRET'),
-            env('PUSHER_APP_ID'),
-            $options
-        );
-
-        $data = ['from' => $from, 'to' => $to, 'message'=>$message]; // sending from and to user id when pressed enter
-        $pusher->trigger('my-channel', 'my-event', $data);
-    }
+//    public function getMessage($user_id) {
+//        $my_id = Auth::id();
+//
+//        //when click to see message selected user's message will be read, update
+//        Message::where(['from'=>$user_id, 'to'=>$my_id])->update(['is_read'=>1]);
+//
+//        // getting all message for the selected user
+//        // getting those message which is from = Auth::id() and to = user_id OR from = user_id ant to = Auth::id();
+//        $messages = Message::where(function ($query) use ($user_id, $my_id){
+//            $query->where('from', $my_id)->where('to', $user_id)->where('is_read', 0);
+//        })->orWhere(function ($query) use ($user_id, $my_id){
+//            $query->where('from', $user_id)->where('to', $my_id)->where('is_read', 0);
+//        })->get();
+//        // messages which are not read by the users
+//        return ['messages'=> $messages];
+//    }
+//
+//    public function sendMessage(Request $request) {
+//        $from = Auth::id();
+//        $to = $request->receiver_id;
+//        $message = $request->message;
+//
+//        $data = new Message();
+//        $data->from = $from;
+//        $data->to = $to;
+//        $data->message = $message;
+//        $data->is_read = 0;
+//        $data->save();
+//
+//        // pusher
+//        $options = array(
+//            'cluster' => 'ap1',
+//            'useTLS' => true
+//        );
+//
+//        $pusher = new Pusher(
+//            env('PUSHER_APP_KEY'),
+//            env('PUSHER_APP_SECRET'),
+//            env('PUSHER_APP_ID'),
+//            $options
+//        );
+//
+//        $data = ['from' => $from, 'to' => $to, 'message'=>$message]; // sending from and to user id when pressed enter
+//        $pusher->trigger('my-channel', 'my-event', $data);
+//    }
 }

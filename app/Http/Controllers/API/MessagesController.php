@@ -10,6 +10,7 @@ use App\UserKey;
 use Aws\Exception\AwsException;
 use App\User;
 use Illuminate\Support\Facades\Auth;
+use App\Message;
 
 class MessagesController extends Controller
 {
@@ -148,5 +149,54 @@ class MessagesController extends Controller
             ->first();
         $hmac_key = $session_start_by_from_user->hmac_key;
         return response(['hmac_key'=>$hmac_key]);
+    }
+
+    public function getMessage($user_id) {
+        $user = Auth::user();
+        $my_id = $user['id'];
+
+        //when click to see message selected user's message will be read, update
+        Message::where(['from'=>$user_id, 'to'=>$my_id])->update(['is_read'=>1]);
+
+        // getting all message for the selected user
+        // getting those message which is from = Auth::id() and to = user_id OR from = user_id ant to = Auth::id();
+        $messages = Message::where(function ($query) use ($user_id, $my_id){
+            $query->where('from', $my_id)->where('to', $user_id)->where('is_read', 0);
+        })->orWhere(function ($query) use ($user_id, $my_id){
+            $query->where('from', $user_id)->where('to', $my_id)->where('is_read', 0);
+        })->get();
+        // messages which are not read by the users
+        return ['messages'=> $messages];
+    }
+
+    public function sendMessage(Request $request)
+    {
+        $user = Auth::user();
+        $from = $user['id'];
+        $to = $request->to_user_id;
+        $message = $request->message;
+
+        $data = new Message();
+        $data->from = $from;
+        $data->to = $to;
+        $data->message = $message;
+        $data->is_read = 0;
+        $data->save();
+
+        // pusher
+        $options = array(
+            'cluster' => 'ap1',
+            'useTLS' => true
+        );
+
+        $pusher = new Pusher(
+            env('PUSHER_APP_KEY'),
+            env('PUSHER_APP_SECRET'),
+            env('PUSHER_APP_ID'),
+            $options
+        );
+
+        $data = ['from' => $from, 'to' => $to, 'message' => $message]; // sending from and to user id when pressed enter
+        $pusher->trigger('my-channel', 'my-event', $data);
     }
 }
