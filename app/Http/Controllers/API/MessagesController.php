@@ -12,6 +12,7 @@ use App\User;
 use Illuminate\Support\Facades\Auth;
 use App\Message;
 use Pusher\Pusher;
+use Illuminate\Support\Facades\DB;
 
 class MessagesController extends Controller
 {
@@ -157,15 +158,19 @@ class MessagesController extends Controller
         $my_id = $user['id'];
 
         //when click to see message selected user's message will be read, update
-        Message::where(['from'=>$user_id, 'to'=>$my_id])->update(['is_read'=>1]);
+
+//        Message::where(['from'=>$user_id, 'to'=>$my_id])->update(['is_read'=>1]);
 
         // getting all message for the selected user
         // getting those message which is from = Auth::id() and to = user_id OR from = user_id ant to = Auth::id();
-        $messages = Message::where(function ($query) use ($user_id, $my_id){
-            $query->where('from', $my_id)->where('to', $user_id)->where('is_read', 0);
-        })->orWhere(function ($query) use ($user_id, $my_id){
-            $query->where('from', $user_id)->where('to', $my_id)->where('is_read', 0);
-        })->get();
+//        $messages = Message::where(function ($query) use ($user_id, $my_id){
+//            $query->where('from', $my_id)->where('to', $user_id)->where('is_read', 0);
+//        })->orWhere(function ($query) use ($user_id, $my_id){
+//            $query->where('from', $user_id)->where('to', $my_id)->where('is_read', 0);
+//        })->get();
+
+        $messages = Message::where('from', $user_id)->where('to', $my_id)->get();
+
         // messages which are not read by the users
         return ['messages'=> $messages];
     }
@@ -199,5 +204,17 @@ class MessagesController extends Controller
 
         $data = ['from' => $from, 'to' => $to, 'message' => $message]; // sending from and to user id when pressed enter
         $pusher->trigger('my-channel', 'my-event', $data);
+    }
+
+    public function readMessage(Request $request) {
+        $read_messages = $request['read_messages_id'];
+        $count = 0;
+        foreach ($read_messages as $read_message) {
+            $message = Message::find($read_message);
+            $message['is_read'] = 1;
+            $message->save();
+            $count++;
+        }
+        return response(['count'=>$count], 201);
     }
 }
