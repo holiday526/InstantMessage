@@ -88,4 +88,14 @@ class UserController extends Controller
         return response()->json(['success' => $success], Config::get('constants.status.ok'));
     }
 
+    public function getEmail(Request $request) {
+        $user = User::find($request['to_user_id']);
+        return response()->json(['email'=>$user['email']]);
+    }
+
+    public function getUserIdByEmail(Request $request) {
+        $user = User::where('email', $request['email'])->first();
+        return response()->json(['user_id'=>$user['id']]);
+    }
+
 }

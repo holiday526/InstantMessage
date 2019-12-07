@@ -21,10 +21,15 @@ Route::post('login', 'API\UserController@login');
 Route::post('register', 'API\UserController@register');
 
 Route::group(['middleware' => 'auth:api'], function() {
+    // MessagesController
     Route::post('setkey', 'API\MessagesController@setSessionKey');
     Route::post('getkey', 'API\MessagesController@getDataKey');
     Route::post('getHmacKey', 'API\MessagesController@getHmacKey');
     Route::post('message', 'API\MessagesController@sendMessage');
     Route::get('message/{user_id}', 'API\MessagesController@getMessage');
+
+    // UserController
+    Route::get('getEmail', 'API\UserController@getEmail');
+    Route::get('getUserId', 'API\UserController@getUserIdByEmail');
 });
 
