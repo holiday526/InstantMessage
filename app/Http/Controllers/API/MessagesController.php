@@ -169,7 +169,7 @@ class MessagesController extends Controller
 //            $query->where('from', $user_id)->where('to', $my_id)->where('is_read', 0);
 //        })->get();
 
-        $messages = Message::where('from', $user_id)->where('to', $my_id)->get();
+        $messages = Message::where('from', $user_id)->where('to', $my_id)->where('is_read', 0)->get();
 
         // messages which are not read by the users
         return ['messages'=> $messages];
